@@ -5,9 +5,8 @@ Implementations of AES from FIPS-197
 
 Specification: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197-upd1.pdf
 
-==
 AES Educational
-==
+----------------------------------
 
 Educational purpose oriented implementation in C++
 
