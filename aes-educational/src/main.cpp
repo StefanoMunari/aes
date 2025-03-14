@@ -2,6 +2,7 @@
 #include <array>
 #include <string>
 #include "key_expansion.h"
+#include "cipher.h"
 #include "version.h"
 
 using namespace aes_edu;
@@ -16,7 +17,7 @@ int help(std::string prog_name)
 }
 
 int main(int argc, char* argv[]) {
-    std::cout << "VERSION" << version << std::endl;
+    std::cout << "VERSION:" << version << std::endl;
     if (argc > 1 && (std::string(argv[1]) == "-h" || std::string(argv[1]) == "--help"))
         return help(std::string(argv[0]));
     // Appendix A.1: Expansion of a 128-bit Key
@@ -29,7 +30,10 @@ int main(int argc, char* argv[]) {
             0xab, 0xf7, 0x15, 0x88,
             0x09, 0xcf, 0x4f, 0x3c
         };
-        key_expansion::expand<key_size>(key);
+        auto expanded_key = key_expansion::expand<key_size>(key);
+        const auto plaintext_size = 16U;
+        uint8_t plaintext[] = {0x32, 0x43, 0xf6, 0xa8, 0x88, 0x5a, 0x30, 0x8d, 0x31, 0x31, 0x98, 0xa2, 0xe0, 0x37, 0x07, 0x34};
+        auto ciphertext = cipher::cipher<key_size>(plaintext, plaintext_size, expanded_key);
     }
     // Appendix A.2: Expansion of a 192-bit Key
     {
