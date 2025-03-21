@@ -18,20 +18,37 @@ namespace aes_edu::cipher {
     static
     auto shiftrows(std::array<uint8_t, STATE_SIZE> state)
     {
-        std::function<std::array<uint8_t, STATE_SIZE>(std::array<uint8_t, STATE_SIZE>, int)>
-        shiftrow = [&](std::array<uint8_t, STATE_SIZE> state, int start) -> std::array<uint8_t, STATE_SIZE>
+        std::function<std::array<uint8_t, ROW_SIZE>(int)>
+        get_row_indexes = [&](int start) -> std::array<uint8_t, ROW_SIZE>
         {
-            if (start == WORD_SIZE) return state;// last row processed
-            auto offset = WORD_SIZE;
-            auto x = state[start];
-            const auto end_i = start + offset * (WORD_SIZE - 1);
-            for (int i = start + offset; i <= end_i; i += offset) state[i-offset] = state[i];
-            state[end_i] = x;
-            return shiftrow(state, start + 1);
+      		const auto offset = WORD_SIZE;
+      		std::array<uint8_t, ROW_SIZE> row_indexes{};
+        	for (int i = 0; i < ROW_SIZE; ++i) row_indexes[i] = start + offset * i;
+            return row_indexes;
         };
-        // row: 1 -> skip
-        // row: 2, 3, 4
-        return shiftrow(state, 1);
+        // row: 0 -> skip
+        // row 1
+        auto row_i = 1;
+        auto row_indexes = get_row_indexes(row_i);
+        auto x = state[row_i];
+        for (int i = 0; i < ROW_SIZE; ++i) state[row_indexes[i]] = state[row_indexes[((i+row_i) % ROW_SIZE)]];
+        state[row_indexes[ROW_SIZE-row_i]] = x;
+        // row 2
+        row_i = 2;
+        row_indexes = get_row_indexes(row_i);
+        for (int i = 0; i < ROW_SIZE/2; ++i) {
+			auto x = state[row_indexes[i]];
+			state[row_indexes[i]] = state[row_indexes[i+row_i]];
+			state[row_indexes[i+row_i]] = x;
+        }
+        // row 3
+        row_i = 3;
+        row_indexes = get_row_indexes(row_i);
+        x = state[row_indexes[ROW_SIZE-1]];
+        for (int i = ROW_SIZE-1; i > 0; --i) state[row_indexes[i]] = state[row_indexes[i-1]];
+        state[row_indexes[0]] = x;
+
+        return state;
     }
 
     static
