@@ -33,6 +33,7 @@ int main(int argc, char* argv[]) {
         auto expanded_key = key_expansion::expand<key_size>(key);
         const auto plaintext_size = 16U;
         uint8_t plaintext[] = {0x32, 0x43, 0xf6, 0xa8, 0x88, 0x5a, 0x30, 0x8d, 0x31, 0x31, 0x98, 0xa2, 0xe0, 0x37, 0x07, 0x34};
+        std::cout << "[Cipher with 128-bit Key]\n";
         auto ciphertext = cipher::cipher<key_size>(plaintext, plaintext_size, expanded_key);
     }
     // Appendix A.2: Expansion of a 192-bit Key

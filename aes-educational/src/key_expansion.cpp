@@ -90,7 +90,7 @@ namespace aes_edu::key_expansion
             const auto module = (w_i % KEY_NUM_WORDS);
 #ifdef DEBUG_FIPS_197_APPENDIX_A
     std::cout << w_i << " ";
-    utils::print_hex(temp);
+    print_hex(temp);
 #endif // DEBUG_FIPS_197_APPENDIX_A
             if (module == 0)
             {
@@ -99,10 +99,10 @@ namespace aes_edu::key_expansion
                 auto c = rcon((w_i - 1) / KEY_NUM_WORDS);
                 temp = XOR(s, c);
 #ifdef DEBUG_FIPS_197_APPENDIX_A
-        utils::print_hex(r);
-        utils::print_hex(s);
-        utils::print_hex(c);
-        utils::print_hex(temp);
+        print_hex(r);
+        print_hex(s);
+        print_hex(c);
+        print_hex(temp);
 #endif // DEBUG_FIPS_197_APPENDIX_A
             }
             else if (KEY_NUM_WORDS > 6 && (module == WORD_SIZE))
@@ -118,8 +118,8 @@ namespace aes_edu::key_expansion
             memcpy(&ex_key[w_i * WORD_SIZE], result.data(), WORD_SIZE);
             ++w_i;
 #ifdef DEBUG_FIPS_197_APPENDIX_A
-    utils::print_hex(w);
-    utils::print_hex(result);
+    print_hex(w);
+    print_hex(result);
     std::cout << std::endl;
 #endif // DEBUG_FIPS_197_APPENDIX_A
         }
