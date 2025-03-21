@@ -55,7 +55,7 @@ namespace aes_edu::utils {
         return key_size + NUM_WORDS_X_ROUND * NUM_ROUNDS(key_size) * WORD_SIZE;
     }
 
-    template <std::size_t SIZE = NUM_WORDS_X_ROUND, typename T, std::size_t N>
+    template <std::size_t SIZE = STATE_SIZE, typename T, std::size_t N>
     constexpr std::array<T, SIZE> sub_array(const std::array<T, N>& arr, const int start)
     {
         std::array<T, SIZE> result{};
