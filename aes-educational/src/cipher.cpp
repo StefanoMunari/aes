@@ -51,8 +51,31 @@ namespace aes_edu::cipher {
         return state;
     }
 
+    // gf_mult_2: * 2 in GF(2^8)
+    // m(x): AES irreducible polynomial = (0x1B)
+    // see sections: 4.1, 4.2 for further details
+    static uint8_t gf_mult_2(uint8_t b) {
+        bool high_bit_set = b & 0x80; // flag if highest bit is set
+        b <<= 1;
+        // XTIMES(b): since overflowed then reduce by m(x)
+        if (high_bit_set) b ^= 0x1B;
+        return b;
+    }
+
+    // see sections: 5.1.3, 4.1, 4.2 for further details
     static
     auto mixcolumns(std::array<uint8_t, STATE_SIZE> state) {
+        for (auto i = 0; i < state.size(); i += COLUMN_SIZE) {
+            // process by matrix column
+            auto c = sub_array<COLUMN_SIZE>(state, i);
+            // decomposition of (5.8) from AES spec.
+            // in GF(2^8): 3 * b -> b + 2 * b
+            // Addition/Subtraction in GF(2^8): + is ^, - is ^
+            state[i]   = gf_mult_2(c[0]) ^ c[1]            ^ gf_mult_2(c[1]) ^ c[2]            ^ c[3];
+            state[i+1] = c[0]            ^ gf_mult_2(c[1]) ^ c[2]            ^ gf_mult_2(c[2]) ^ c[3];
+            state[i+2] = c[0]            ^ c[1]            ^ gf_mult_2(c[2]) ^ c[3]            ^ gf_mult_2(c[3]);
+            state[i+3] = c[0]            ^ gf_mult_2(c[0]) ^ c[1]            ^ c[2]            ^ gf_mult_2(c[3]);
+        }
         return state;
     }
 
@@ -73,7 +96,7 @@ namespace aes_edu::cipher {
     {
         std::array<uint8_t, STATE_SIZE> state = {};
         memcpy(state.data(), plaintext, STATE_SIZE);
-        const auto round_key_0 = sub_array(ex_key, 0);
+        const auto round_key_0 = sub_array<STATE_SIZE>(ex_key, 0);
 #ifdef DEBUG_FIPS_197_APPENDIX_B
     std::cout << "I ";
     print_hex(state);
@@ -99,7 +122,7 @@ namespace aes_edu::cipher {
     print_hex(state);
 #endif // DEBUG_FIPS_197_APPENDIX_B
             const auto byte_i = NUM_WORDS_X_ROUND * round;
-            const auto round_key = sub_array(ex_key, byte_i);
+            const auto round_key = sub_array<STATE_SIZE>(ex_key, byte_i);
 #ifdef DEBUG_FIPS_197_APPENDIX_B
     print_hex(round_key);
     std::cout << std::endl;
@@ -116,7 +139,7 @@ namespace aes_edu::cipher {
     print_hex(state);
 #endif // DEBUG_FIPS_197_APPENDIX_B
         const auto byte_i = NUM_WORDS_X_ROUND * NUM_ROUNDS(KEY_SIZE);
-        const auto round_key_n = sub_array(ex_key, byte_i);
+        const auto round_key_n = sub_array<STATE_SIZE>(ex_key, byte_i);
 #ifdef DEBUG_FIPS_197_APPENDIX_B
     print_hex(round_key_n);
     std::cout << std::endl;

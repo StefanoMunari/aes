@@ -14,6 +14,7 @@ namespace aes_edu::utils {
     static constexpr uint8_t STATE_SIZE = 1 << WORD_SIZE;
     static constexpr auto NUM_WORDS_X_ROUND = 4U;
     static constexpr auto ROW_SIZE = 4U;
+    static constexpr auto COLUMN_SIZE = 4U;
 
 
     static constexpr uint8_t SBOX[] = {
@@ -56,7 +57,7 @@ namespace aes_edu::utils {
         return key_size + NUM_WORDS_X_ROUND * NUM_ROUNDS(key_size) * WORD_SIZE;
     }
 
-    template <std::size_t SIZE = STATE_SIZE, typename T, std::size_t N>
+    template <std::size_t SIZE, typename T, std::size_t N>
     constexpr std::array<T, SIZE> sub_array(const std::array<T, N>& arr, const int start)
     {
         std::array<T, SIZE> result{};
