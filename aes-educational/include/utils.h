@@ -13,6 +13,7 @@ namespace aes_edu::utils {
     static constexpr uint8_t WORD_SIZE = 4U;
     static constexpr uint8_t STATE_SIZE = 1 << WORD_SIZE;
     static constexpr auto NUM_WORDS_X_ROUND = 4U;
+    static constexpr auto NUM_BYTES_X_ROUND = NUM_WORDS_X_ROUND * WORD_SIZE;
     static constexpr auto ROW_SIZE = 4U;
     static constexpr auto COLUMN_SIZE = 4U;
 

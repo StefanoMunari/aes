@@ -98,15 +98,15 @@ namespace aes_edu::cipher {
         memcpy(state.data(), plaintext, STATE_SIZE);
         const auto round_key_0 = sub_array<STATE_SIZE>(ex_key, 0);
 #ifdef DEBUG_FIPS_197_APPENDIX_B
-    std::cout << "I ";
+    std::cout << "I  ";
     print_hex(state);
     print_hex(round_key_0);
     std::cout << std::endl;
 #endif // DEBUG_FIPS_197_APPENDIX_B
         state = add_round_key(state, round_key_0);
-        for (int round = 0; round < NUM_ROUNDS(KEY_SIZE) - 1; ++round) {
+        for (int round = 1; round < NUM_ROUNDS(KEY_SIZE); ++round) {
 #ifdef DEBUG_FIPS_197_APPENDIX_B
-    std::cout << round + 1 << " ";
+    std::cout << round << "  ";
     print_hex(state);
 #endif // DEBUG_FIPS_197_APPENDIX_B
             state = subbytes(state);
@@ -121,7 +121,7 @@ namespace aes_edu::cipher {
 #ifdef DEBUG_FIPS_197_APPENDIX_B
     print_hex(state);
 #endif // DEBUG_FIPS_197_APPENDIX_B
-            const auto byte_i = NUM_WORDS_X_ROUND * round;
+            const auto byte_i = NUM_BYTES_X_ROUND * round;
             const auto round_key = sub_array<STATE_SIZE>(ex_key, byte_i);
 #ifdef DEBUG_FIPS_197_APPENDIX_B
     print_hex(round_key);
@@ -129,16 +129,19 @@ namespace aes_edu::cipher {
 #endif // DEBUG_FIPS_197_APPENDIX_B
             state = add_round_key(state, round_key);
         }
+#ifdef DEBUG_FIPS_197_APPENDIX_B
+        std::cout << std::to_string(NUM_ROUNDS(KEY_SIZE)) + " ";
+        print_hex(state);
+#endif // DEBUG_FIPS_197_APPENDIX_B
         state = subbytes(state);
 #ifdef DEBUG_FIPS_197_APPENDIX_B
-    std::cout << "O ";
     print_hex(state);
 #endif // DEBUG_FIPS_197_APPENDIX_B
         state = shiftrows(state);
 #ifdef DEBUG_FIPS_197_APPENDIX_B
     print_hex(state);
 #endif // DEBUG_FIPS_197_APPENDIX_B
-        const auto byte_i = NUM_WORDS_X_ROUND * NUM_ROUNDS(KEY_SIZE);
+        const auto byte_i =  NUM_BYTES_X_ROUND * NUM_ROUNDS(KEY_SIZE);
         const auto round_key_n = sub_array<STATE_SIZE>(ex_key, byte_i);
 #ifdef DEBUG_FIPS_197_APPENDIX_B
     print_hex(round_key_n);
