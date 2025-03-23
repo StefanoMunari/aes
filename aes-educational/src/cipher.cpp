@@ -91,11 +91,8 @@ namespace aes_edu::cipher {
     template <std::size_t KEY_SIZE>
     static
     std::array<uint8_t, STATE_SIZE>
-    cipher__(uint8_t *plaintext, const size_t plaintext_size,
-        std::array<uint8_t, EXPANDED_KEY_SIZE(KEY_SIZE)> ex_key)
+    cipher__(std::array<uint8_t, STATE_SIZE> state, std::array<uint8_t, EXPANDED_KEY_SIZE(KEY_SIZE)> ex_key)
     {
-        std::array<uint8_t, STATE_SIZE> state = {};
-        memcpy(state.data(), plaintext, STATE_SIZE);
         const auto round_key_0 = sub_array<STATE_SIZE>(ex_key, 0);
 #ifdef DEBUG_FIPS_197_APPENDIX_B
     std::cout << "I  ";
@@ -151,18 +148,18 @@ namespace aes_edu::cipher {
         return state;
     }
 
-    std::array<uint8_t, STATE_SIZE> cipher_128(uint8_t *plaintext, const size_t plaintext_size,
-    std::array<uint8_t, EXPANDED_KEY_SIZE(16U)> ex_key) {
-        return cipher__<16U>(plaintext, plaintext_size, ex_key);
+    std::array<uint8_t, STATE_SIZE> cipher_128(std::array<uint8_t, STATE_SIZE> plaintext,
+                                               std::array<uint8_t, EXPANDED_KEY_SIZE(16U)> ex_key) {
+        return cipher__<16U>(plaintext, ex_key);
     }
 
-    std::array<uint8_t, STATE_SIZE> cipher_192(uint8_t *plaintext, const size_t plaintext_size,
-        std::array<uint8_t, EXPANDED_KEY_SIZE(24U)> ex_key) {
-        return cipher__<24U>(plaintext, plaintext_size, ex_key);
+    std::array<uint8_t, STATE_SIZE> cipher_192(std::array<uint8_t, STATE_SIZE> plaintext,
+                                               std::array<uint8_t, EXPANDED_KEY_SIZE(24U)> ex_key) {
+        return cipher__<24U>(plaintext, ex_key);
     }
 
-    std::array<uint8_t, STATE_SIZE> cipher_256(uint8_t *plaintext, const size_t plaintext_size,
-        std::array<uint8_t, EXPANDED_KEY_SIZE(32U)> ex_key) {
-        return cipher__<32U>(plaintext, plaintext_size, ex_key);
+    std::array<uint8_t, STATE_SIZE> cipher_256(std::array<uint8_t, STATE_SIZE> plaintext,
+                                               std::array<uint8_t, EXPANDED_KEY_SIZE(32U)> ex_key) {
+        return cipher__<32U>(plaintext, ex_key);
     }
 }

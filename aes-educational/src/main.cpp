@@ -20,8 +20,7 @@ int main(int argc, char* argv[]) {
     std::cout << "VERSION:" << version << std::endl;
     if (argc > 1 && (std::string(argv[1]) == "-h" || std::string(argv[1]) == "--help"))
         return help(std::string(argv[0]));
-    // Appendix A.1: Expansion of a 128-bit Key
-    {
+    {// Appendix A.1: Expansion of a 128-bit Key
         std::cout << "[Expansion of a 128-bit Key]\n";
         static constexpr auto key_size = 16U;
         std::array<uint8_t, key_size> key{
@@ -31,16 +30,20 @@ int main(int argc, char* argv[]) {
             0x09, 0xcf, 0x4f, 0x3c
         };
         auto expanded_key = key_expansion::expand<key_size>(key);
-        const auto plaintext_size = 16U;
-        uint8_t plaintext[] = {0x32, 0x43, 0xf6, 0xa8, 0x88, 0x5a, 0x30, 0x8d, 0x31, 0x31, 0x98, 0xa2, 0xe0, 0x37, 0x07, 0x34};
+    // Appendix B: Cipher Example (using 128-bit key, 128-bit plaintext)
+        std::array<uint8_t, key_size> plaintext {
+            0x32, 0x43, 0xf6, 0xa8,
+            0x88, 0x5a, 0x30, 0x8d,
+            0x31, 0x31, 0x98, 0xa2,
+            0xe0, 0x37, 0x07, 0x34
+        };
         std::cout << "[Cipher with 128-bit Key]\n";
-        auto ciphertext = cipher::cipher<key_size>(plaintext, plaintext_size, expanded_key);
+        auto ciphertext = cipher::cipher<key_size>(plaintext, expanded_key);
         std::cout << "O  ";
         utils::print_hex(ciphertext);
         std::cout << "\n";
     }
-    // Appendix A.2: Expansion of a 192-bit Key
-    {
+    {// Appendix A.2: Expansion of a 192-bit Key
         std::cout << "[Expansion of a 192-bit Key]\n";
         static constexpr auto key_size = 24U;
         std::array<uint8_t, key_size> key{
@@ -51,10 +54,31 @@ int main(int argc, char* argv[]) {
             0x62, 0xf8, 0xea, 0xd2,
             0x52, 0x2c, 0x6b, 0x7b
         };
-        key_expansion::expand<key_size>(key);
+        auto expanded_key = key_expansion::expand<key_size>(key);
+        // https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/AES_Core_All.pdf
+        // reference ECB-AES192 (Encryption)
+        // 64B plaintext -> 4 iterations on cipher: each one generates a block of ciphertext
+        static constexpr auto plaintext_size = 64U;
+        std::array<uint8_t, plaintext_size> plaintext {
+            0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96,
+            0xe9, 0x3d, 0x7e, 0x11, 0x73, 0x93, 0x17, 0x2a,
+            0xae, 0x2d, 0x8a, 0x57, 0x1e, 0x03, 0xac, 0x9c,
+            0x9e, 0xb7, 0x6f, 0xac, 0x45, 0xaf, 0x8e, 0x51,
+            0x30, 0xc8, 0x1c, 0x46, 0xa3, 0x5c, 0xe4, 0x11,
+            0xe5, 0xfb, 0xc1, 0x19, 0x1a, 0x0a, 0x52, 0xef,
+            0xf6, 0x9f, 0x24, 0x45, 0xdf, 0x4f, 0x9b, 0x17,
+            0xad, 0x2b, 0x41, 0x7b, 0xe6, 0x6c, 0x37, 0x10
+        };
+        std::cout << "[Cipher with 192-bit Key]\n";
+        for (auto i = 0; i < plaintext_size; i += utils::STATE_SIZE) {
+            auto state = utils::sub_array<utils::STATE_SIZE>(plaintext, i);
+            auto ciphertext = cipher::cipher<key_size>(state, expanded_key);
+            std::cout << "O  ";
+            utils::print_hex(ciphertext);
+            std::cout << "\n";
+        }
     }
-    // Appendix A.3: Expansion of a 256-bit Key
-    {
+    {// Appendix A.3: Expansion of a 256-bit Key
         std::cout << "[Expansion of a 256-bit Key]\n";
         static constexpr auto key_size = 32U;
         std::array<uint8_t, key_size> key{
@@ -67,7 +91,29 @@ int main(int argc, char* argv[]) {
             0x2d, 0x98, 0x10, 0xa3,
             0x09, 0x14, 0xdf, 0xf4
         };
-        key_expansion::expand<key_size>(key);
+        auto expanded_key = key_expansion::expand<key_size>(key);
+        // https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/AES_Core_All.pdf
+        // reference ECB-AES256 (Encryption)
+        // 64B plaintext -> 4 iterations on cipher: each one generates a block of ciphertext
+        static constexpr auto plaintext_size = 64U;
+        std::array<uint8_t, plaintext_size> plaintext {
+            0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96,
+            0xe9, 0x3d, 0x7e, 0x11, 0x73, 0x93, 0x17, 0x2a,
+            0xae, 0x2d, 0x8a, 0x57, 0x1e, 0x03, 0xac, 0x9c,
+            0x9e, 0xb7, 0x6f, 0xac, 0x45, 0xaf, 0x8e, 0x51,
+            0x30, 0xc8, 0x1c, 0x46, 0xa3, 0x5c, 0xe4, 0x11,
+            0xe5, 0xfb, 0xc1, 0x19, 0x1a, 0x0a, 0x52, 0xef,
+            0xf6, 0x9f, 0x24, 0x45, 0xdf, 0x4f, 0x9b, 0x17,
+            0xad, 0x2b, 0x41, 0x7b, 0xe6, 0x6c, 0x37, 0x10
+        };
+        std::cout << "[Cipher with 256-bit Key]\n";
+        for (auto i = 0; i < plaintext_size; i += utils::STATE_SIZE) {
+            auto state = utils::sub_array<utils::STATE_SIZE>(plaintext, i);
+            auto ciphertext = cipher::cipher<key_size>(state, expanded_key);
+            std::cout << "O  ";
+            utils::print_hex(ciphertext);
+            std::cout << "\n";
+        }
     }
     return 0;
 }
