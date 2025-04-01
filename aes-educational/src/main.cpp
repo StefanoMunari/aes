@@ -47,7 +47,10 @@ int main(int argc, char* argv[]) {
         std::cout << "\n";
         std::cout << "[Decryption with 128-bit Key]\n";
         auto deciphered_text = inv_cipher::inv_cipher<key_size>(ciphertext, expanded_key);
-        std::cout << ((plaintext == deciphered_text) ? "SUCCESS" : "FAILED") << "\n";
+        std::cout << "O  ";
+        utils::print_hex(deciphered_text);
+        std::cout << "\n";
+        std::cout << "-> " << ((plaintext == deciphered_text) ? "SUCCESS" : "FAILED") << "\n";
     }
     {// Appendix A.2: Expansion of a 192-bit Key
         std::cout << "[Expansion of a 192-bit Key]\n";
@@ -89,7 +92,10 @@ int main(int argc, char* argv[]) {
         auto deciphered_text = inv_cipher::inv_cipher<key_size>(ciphertext_sample, expanded_key);
         std::array<uint8_t, STATE_SIZE> plaintext_sample;
         memcpy(plaintext_sample.data(), &plaintext[plaintext_size-STATE_SIZE], STATE_SIZE);
-        std::cout << ((plaintext_sample == deciphered_text) ? "SUCCESS" : "FAILED") << "\n";
+        std::cout << "O  ";
+        utils::print_hex(deciphered_text);
+        std::cout << "\n";
+        std::cout << "-> " << ((plaintext_sample == deciphered_text) ? "SUCCESS" : "FAILED") << "\n";
     }
     {// Appendix A.3: Expansion of a 256-bit Key
         std::cout << "[Expansion of a 256-bit Key]\n";
@@ -127,12 +133,16 @@ int main(int argc, char* argv[]) {
             std::cout << "O  ";
             utils::print_hex(ciphertext);
             std::cout << "\n";
+            ciphertext_sample = ciphertext;
         }
         std::cout << "[Decryption with 256-bit Key]\n";
         auto deciphered_text = inv_cipher::inv_cipher<key_size>(ciphertext_sample, expanded_key);
         std::array<uint8_t, STATE_SIZE> plaintext_sample;
         memcpy(plaintext_sample.data(), &plaintext[plaintext_size-STATE_SIZE], STATE_SIZE);
-        std::cout << ((plaintext_sample == deciphered_text) ? "SUCCESS" : "FAILED") << "\n";
+        std::cout << "O  ";
+        utils::print_hex(deciphered_text);
+        std::cout << "\n";
+        std::cout << "-> " << ((plaintext_sample == deciphered_text) ? "SUCCESS" : "FAILED") << "\n";
     }
     return 0;
 }
