@@ -38,22 +38,21 @@ namespace aes_edu::inv_cipher {
     std::array<uint8_t, STATE_SIZE>
     inv_cipher__(std::array<uint8_t, STATE_SIZE> state, std::array<uint8_t, EXPANDED_KEY_SIZE(KEY_SIZE)> ex_key)
     {
-        //const auto round_key_0 = sub_array<STATE_SIZE>(ex_key, 0);
-
-        //state = add_round_key(state, round_key_0);
+        const auto byte_i = NUM_BYTES_X_ROUND * NUM_ROUNDS(KEY_SIZE);
+        const auto round_key_n = sub_array<STATE_SIZE>(ex_key, byte_i);
+        state = add_round_key(state, round_key_n);
         for (int round = NUM_ROUNDS(KEY_SIZE); round > 0; --round) {
             state = inv_shiftrows(state);
             //state = inv_subbytes(state);
-            //const auto byte_i = NUM_BYTES_X_ROUND * round;
-            //const auto round_key = sub_array<STATE_SIZE>(ex_key, byte_i);
-            //state = add_round_key(state, round_key);
+            const auto byte_i = NUM_BYTES_X_ROUND * round;
+            const auto round_key = sub_array<STATE_SIZE>(ex_key, byte_i);
+            state = add_round_key(state, round_key);
             //state = inv_mixcolumns(state);
         }
         state = inv_shiftrows(state);
         //state = inv_subbytes(state);
-        //const auto byte_i = NUM_BYTES_X_ROUND * NUM_ROUNDS(KEY_SIZE);
-        //const auto round_key_n = sub_array<STATE_SIZE>(ex_key, byte_i);
-        //state = add_round_key(state, round_key_n);
+        const auto round_key_0 = sub_array<STATE_SIZE>(ex_key, 0);
+        state = add_round_key(state, round_key_0);
         return state;
     }
 

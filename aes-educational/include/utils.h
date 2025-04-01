@@ -73,7 +73,16 @@ namespace aes_edu::utils {
         std::array<uint8_t, ROW_SIZE> row_indexes{};
         for (int i = 0; i < ROW_SIZE; ++i) row_indexes[i] = start + offset * i;
         return row_indexes;
-    };
+    }
+
+    inline
+    auto add_round_key(std::array<uint8_t, STATE_SIZE> state, const std::array<uint8_t, STATE_SIZE> round_key) {
+      	std::transform(state.begin(), state.end(), round_key.begin(), state.begin(),
+        [](uint8_t x, uint8_t y) {
+            return x ^= y;
+        });
+        return state;
+    }
 
 
     template<std::size_t SIZE>

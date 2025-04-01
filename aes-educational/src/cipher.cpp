@@ -71,15 +71,6 @@ namespace aes_edu::cipher {
         return state;
     }
 
-    static
-    auto add_round_key(std::array<uint8_t, STATE_SIZE> state, const std::array<uint8_t, STATE_SIZE> round_key) {
-      	std::transform(state.begin(), state.end(), round_key.begin(), state.begin(),
-        [](uint8_t x, uint8_t y) {
-            return x ^= y;
-        });
-        return state;
-    }
-
     template <std::size_t KEY_SIZE>
     static
     std::array<uint8_t, STATE_SIZE>
