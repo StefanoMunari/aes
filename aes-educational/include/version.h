@@ -3,6 +3,6 @@
 
 namespace aes_edu
 {
-    static constexpr auto version = "0.0.1-edu";
+    static constexpr auto version = "1.0.0-edu";
 }
 #endif //AESEDU_VERSION_H
