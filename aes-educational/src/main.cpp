@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <array>
+#include <inv_cipher.h>
 #include <string>
 #include "key_expansion.h"
 #include "cipher.h"
@@ -42,6 +43,9 @@ int main(int argc, char* argv[]) {
         std::cout << "O  ";
         utils::print_hex(ciphertext);
         std::cout << "\n";
+        std::cout << "[Decryption with 128-bit Key]\n";
+        auto deciphered_text = inv_cipher::inv_cipher<key_size>(ciphertext, expanded_key);
+        std::cout << ((plaintext == deciphered_text) ? "SUCCESS" : "FAILED") << "\n";
     }
     {// Appendix A.2: Expansion of a 192-bit Key
         std::cout << "[Expansion of a 192-bit Key]\n";
@@ -70,13 +74,20 @@ int main(int argc, char* argv[]) {
             0xad, 0x2b, 0x41, 0x7b, 0xe6, 0x6c, 0x37, 0x10
         };
         std::cout << "[Cipher with 192-bit Key]\n";
+        std::array<uint8_t, utils::STATE_SIZE> ciphertext_sample;
         for (auto i = 0; i < plaintext_size; i += utils::STATE_SIZE) {
             auto state = utils::sub_array<utils::STATE_SIZE>(plaintext, i);
             auto ciphertext = cipher::cipher<key_size>(state, expanded_key);
             std::cout << "O  ";
             utils::print_hex(ciphertext);
             std::cout << "\n";
+            ciphertext_sample = ciphertext;
         }
+        std::cout << "[Decryption with 192-bit Key]\n";
+        auto deciphered_text = inv_cipher::inv_cipher<key_size>(ciphertext_sample, expanded_key);
+        std::array<uint8_t, utils::STATE_SIZE> plaintext_sample;
+        memcpy(plaintext_sample.data(), &plaintext[plaintext_size-utils::STATE_SIZE], utils::STATE_SIZE);
+        std::cout << ((plaintext_sample == deciphered_text) ? "SUCCESS" : "FAILED") << "\n";
     }
     {// Appendix A.3: Expansion of a 256-bit Key
         std::cout << "[Expansion of a 256-bit Key]\n";
@@ -107,6 +118,7 @@ int main(int argc, char* argv[]) {
             0xad, 0x2b, 0x41, 0x7b, 0xe6, 0x6c, 0x37, 0x10
         };
         std::cout << "[Cipher with 256-bit Key]\n";
+        std::array<uint8_t, utils::STATE_SIZE> ciphertext_sample;
         for (auto i = 0; i < plaintext_size; i += utils::STATE_SIZE) {
             auto state = utils::sub_array<utils::STATE_SIZE>(plaintext, i);
             auto ciphertext = cipher::cipher<key_size>(state, expanded_key);
@@ -114,6 +126,11 @@ int main(int argc, char* argv[]) {
             utils::print_hex(ciphertext);
             std::cout << "\n";
         }
+        std::cout << "[Decryption with 256-bit Key]\n";
+        auto deciphered_text = inv_cipher::inv_cipher<key_size>(ciphertext_sample, expanded_key);
+        std::array<uint8_t, utils::STATE_SIZE> plaintext_sample;
+        memcpy(plaintext_sample.data(), &plaintext[plaintext_size-utils::STATE_SIZE], utils::STATE_SIZE);
+        std::cout << ((plaintext_sample == deciphered_text) ? "SUCCESS" : "FAILED") << "\n";
     }
     return 0;
 }

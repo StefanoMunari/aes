@@ -18,14 +18,6 @@ namespace aes_edu::cipher {
     static
     auto shiftrows(std::array<uint8_t, STATE_SIZE> state)
     {
-        std::function<std::array<uint8_t, ROW_SIZE>(int)>
-        get_row_indexes = [&](int start) -> std::array<uint8_t, ROW_SIZE>
-        {
-      		const auto offset = WORD_SIZE;
-      		std::array<uint8_t, ROW_SIZE> row_indexes{};
-        	for (int i = 0; i < ROW_SIZE; ++i) row_indexes[i] = start + offset * i;
-            return row_indexes;
-        };
         // row: 0 -> skip
         // row 1
         auto row_i = 1;

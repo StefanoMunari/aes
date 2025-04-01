@@ -65,7 +65,17 @@ namespace aes_edu::utils {
         std::copy_n(arr.begin() + start, SIZE, result.begin());
         return result;
     }
-    
+
+    inline
+    std::array<uint8_t, ROW_SIZE> get_row_indexes(int start)
+    {
+        const auto offset = WORD_SIZE;
+        std::array<uint8_t, ROW_SIZE> row_indexes{};
+        for (int i = 0; i < ROW_SIZE; ++i) row_indexes[i] = start + offset * i;
+        return row_indexes;
+    };
+
+
     template<std::size_t SIZE>
     void print_hex(const std::array<uint8_t, SIZE>& arr)
     {
