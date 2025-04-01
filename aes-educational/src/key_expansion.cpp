@@ -1,4 +1,5 @@
 #include "key_expansion.h"
+#include "constants.h"
 #include "utils.h"
 #include <cstdint>
 #include <cstring>
@@ -10,6 +11,7 @@
 namespace aes_edu::key_expansion
 {
     using namespace utils;
+    using namespace constants;
     using aes_word_t = std::array<uint8_t, WORD_SIZE>;
 
     // round constants

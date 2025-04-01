@@ -1,9 +1,13 @@
 #include "inv_cipher.h"
 #include "utils.h"
+#include "common.h"
+#include "constants.h"
 #include <functional>
 
 namespace aes_edu::inv_cipher {
     using namespace utils;
+    using namespace common;
+    using namespace constants;
 
     static
     auto inv_shiftrows(std::array<uint8_t, STATE_SIZE> state) {
@@ -33,6 +37,11 @@ namespace aes_edu::inv_cipher {
         return state;
     }
 
+    static
+    auto inv_subbytes(std::array<uint8_t, STATE_SIZE> state) {
+        return substitution(state, (uint8_t *)INV_SBOX);
+    }
+
     template <std::size_t KEY_SIZE>
     static
     std::array<uint8_t, STATE_SIZE>
@@ -43,14 +52,14 @@ namespace aes_edu::inv_cipher {
         state = add_round_key(state, round_key_n);
         for (int round = NUM_ROUNDS(KEY_SIZE); round > 0; --round) {
             state = inv_shiftrows(state);
-            //state = inv_subbytes(state);
+            state = inv_subbytes(state);
             const auto byte_i = NUM_BYTES_X_ROUND * round;
             const auto round_key = sub_array<STATE_SIZE>(ex_key, byte_i);
             state = add_round_key(state, round_key);
             //state = inv_mixcolumns(state);
         }
         state = inv_shiftrows(state);
-        //state = inv_subbytes(state);
+        state = inv_subbytes(state);
         const auto round_key_0 = sub_array<STATE_SIZE>(ex_key, 0);
         state = add_round_key(state, round_key_0);
         return state;

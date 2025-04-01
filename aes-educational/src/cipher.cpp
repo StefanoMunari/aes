@@ -1,19 +1,13 @@
 #include "cipher.h"
 #include "utils.h"
+#include "common.h"
+#include "constants.h"
 #include <functional>
 
 namespace aes_edu::cipher {
     using namespace utils;
-
-    static
-    auto subbytes(std::array<uint8_t, STATE_SIZE> state) {
-        std::array<uint8_t, STATE_SIZE> s {};
-        for (int i = 0; i < state.size(); ++i)
-        {
-            s[i] = SBOX[state[i]];
-        }
-        return s;
-    }
+    using namespace common;
+    using namespace constants;
 
     static
     auto shiftrows(std::array<uint8_t, STATE_SIZE> state)
@@ -41,6 +35,12 @@ namespace aes_edu::cipher {
         state[row_indexes[0]] = x;
 
         return state;
+    }
+
+
+    static
+    auto subbytes(std::array<uint8_t, STATE_SIZE> state) {
+        return substitution(state, (uint8_t *)SBOX);
     }
 
     // gf_mult_2: * 2 in GF(2^8)
